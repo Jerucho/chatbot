@@ -1,8 +1,46 @@
+<div class="min-h-screen bg-gray-50 p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header Section -->
+    <div class="mb-8">
+      <h1 class="text-3xl font-bold text-gray-900">
+        Bienvenido, {{ agentName }}
+      </h1>
+      <!-- <span>{{ areaName }}</span> -->
+      <p class="mt-2 text-gray-600">
+        Panel de control de mensajes y notificaciones
+      </p>
+    </div>
 
-<section class="flex flex-col gap-4">
-  <app-messages-list
-    *ngFor="let messageSection of messagesTypes"
-    [messages]="getMessagesByType(messageSection)"
-    [messageType]="messageSection"
-  />
-</section>
+    <!-- Stats Section -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-800">Mensajes Pendientes</h3>
+        <p class="text-3xl font-bold text-blue-600 mt-2">
+          {{ getNewChats().length }}
+        </p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-800">En Proceso</h3>
+        <p class="text-3xl font-bold text-yellow-600 mt-2">
+          {{ getActiveChats().length }}
+        </p>
+      </div>
+      <div class="bg-white rounded-lg shadow p-6">
+        <h3 class="text-lg font-semibold text-gray-800">Finalizados</h3>
+        <p class="text-3xl font-bold text-green-600 mt-2">
+          {{ getFinishedChats().length }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Messages Section -->
+    <section class="bg-white rounded-lg shadow">
+      <div class="p-6 border-b border-gray-200">
+        <h2 class="text-xl font-semibold text-gray-800">Lista de Mensajes</h2>
+      </div>
+      <div class="p-6">
+        <app-messages-list [messages]="chats" />
+      </div>
+    </section>
+  </div>
+</div>

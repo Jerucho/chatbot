@@ -7,7 +7,35 @@ import {
 import { CommonModule } from '@angular/common';
 import { SocketService } from '../../services/socket.service';
 import { AuthService } from '../../services/auth.service';
+import { ChatService } from '../../services/chat.service';
 
+export interface Chat {
+  _id: string;
+  userId: string;
+  messages: {
+    role: 'user' | 'assistant' | 'tool';
+    content: string;
+    timestamp: string;
+    _id: string;
+    tool_calls?: {
+      id: string;
+      type: string;
+      function: {
+        name: string;
+        arguments: string;
+      };
+      _id: string;
+    }[];
+    tool_call_id?: string;
+  }[];
+  lastContactAt: string;
+  needsHumanResponse: boolean;
+  createdAt: string;
+  __v: number;
+  userName: string;
+  assignedAdvisor?: string;
+  agentResponseStatus: 'pending' | 'active' | 'finished';
+}
 interface AdvisorNotification {
   area: string;
   message: string;
@@ -23,13 +51,16 @@ interface AdvisorNotification {
   styleUrl: './home.component.css',
 })
 export class HomeComponent implements OnInit, OnDestroy {
-  userId: string = '';
+  public userId: string = '';
   public agentName: string = '';
+  private idUserDB: string = '';
+  public areaName: string = '';
   public advisorNotifications: AdvisorNotification[] = [];
 
   constructor(
     private socketService: SocketService,
-    private authService: AuthService
+    private authService: AuthService,
+    private chatService: ChatService
   ) {}
 
   ngOnInit() {
@@ -42,15 +73,18 @@ export class HomeComponent implements OnInit, OnDestroy {
         if (user) {
           this.agentName = user.agentName || '';
           this.userId = user.id_user || '';
-
+          this.idUserDB = user.idUserDB || '';
+          this.areaName = user.area || '';
           console.log('👤 Usuario cargado:', {
             agentName: this.agentName,
             userId: this.userId,
+            areaName: this.areaName,
           });
 
           // 3. Unirse a la sala una vez que tenemos el userId
           if (this.userId) {
             this.socketService.joinRoom(this.userId);
+            this.getChats();
           }
         }
       },
@@ -84,40 +118,34 @@ export class HomeComponent implements OnInit, OnDestroy {
     'Archivado',
   ];
 
-  public messages: Message[] = [
-    {
-      title: 'Mensaje 1',
-      type: 'Nuevo',
-      area: 'Finanzas',
-      content: 'Contenido del mensaje 1',
-      status: 'Activo',
-      createdAt: '2021-01-01',
-      sender: 'Juan Perez',
-    },
-    {
-      title: 'Mensaje 2',
-      type: 'Nuevo',
-      area: 'Compras',
-      content: 'Contenido del mensaje 2',
-      status: 'Activo',
-      createdAt: '2021-01-01',
-      sender: 'Juan Perez',
-    },
-    {
-      title: 'Mensaje 3',
-      type: 'Archivado',
-      area: 'Ventas',
-      content: 'Contenido del mensaje 3',
-      status: 'Activo',
-      createdAt: '2021-01-01',
-      sender: 'Juan Perez',
-    },
-  ];
+  public chats: Chat[] = [];
 
-  public getMessagesByType(type: string): Message[] {
-    if (type === 'Todos') {
-      return this.messages;
-    }
-    return this.messages.filter((message) => message.type === type);
+  getChats() {
+    this.chatService.getChats(this.idUserDB).subscribe({
+      next: (response) => {
+        console.log('Respuesta completa del servidor:', response);
+        if (response && response.pendingMessages) {
+          this.chats = response.pendingMessages;
+          console.log('💬 Chats obtenidos:', this.chats);
+        } else {
+          console.error('❌ Formato de respuesta inválido:', response);
+        }
+      },
+      error: (error) => {
+        console.error('❌ Error al obtener chats:', error);
+      },
+    });
+  }
+
+  getFinishedChats() {
+    return this.chats.filter((chat) => chat.agentResponseStatus === 'finished');
+  }
+
+  getActiveChats() {
+    return this.chats.filter((chat) => chat.agentResponseStatus === 'active');
+  }
+
+  getNewChats() {
+    return this.chats.filter((chat) => chat.agentResponseStatus === 'pending');
   }
 }

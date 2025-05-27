@@ -14,6 +14,8 @@ export interface LoginResponse {
 export interface UserResponse {
   id_user: string;
   agentName: string;
+  idUserDB: string;
+  area: string;
 }
 
 @Injectable({

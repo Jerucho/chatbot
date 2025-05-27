@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { MessageComponent } from '../message/message.component';
+import { Chat } from '../../pages/home/home.component';
 export type MessageType = 'Nuevo' | 'En Proceso' | 'Resuelto' | 'Archivado';
 export type Area = 'Finanzas' | 'Compras' | 'Ventas' | 'Recursos Humanos';
 
@@ -21,6 +22,5 @@ export interface Message {
   styleUrl: './messages-list.component.css',
 })
 export class MessagesListComponent {
-  @Input() messageType: MessageType = 'Nuevo';
-  @Input() messages: Message[] = [];
+  @Input() messages: Chat[] = [];
 }

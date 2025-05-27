@@ -1,21 +1,12 @@
 <div
   class="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300"
+  *ngIf="message"
 >
   <div class="p-6">
     <div class="flex items-center justify-between mb-4">
       <h2 class="text-xl md:text-2xl font-semibold text-gray-800">
-        {{ message.title }}
+        {{ message.userName || "Usuario no especificado" }}
       </h2>
-      <span
-        class="px-3 py-1 text-sm font-medium rounded-full"
-        [ngClass]="{
-          'bg-green-100 text-green-800': message.status === 'Activo',
-          'bg-yellow-100 text-yellow-800': message.status === 'Nuevo',
-          'bg-gray-100 text-gray-800': message.status === 'Archivado'
-        }"
-      >
-        {{ message.status }}
-      </span>
     </div>
 
     <div class="flex items-start gap-3 mb-4">
@@ -23,14 +14,29 @@
         [img]="messageCircleIcon"
         class="my-icon w-5 h-5 md:w-6 md:h-6 text-blue-500 flex-shrink-0"
       ></lucide-icon>
-      <p class="text-base md:text-lg text-gray-700">{{ message.content }}</p>
+      <p class="text-base md:text-lg text-gray-700">
+        {{
+          message.needsHumanResponse
+            ? "Necesita respuesta"
+            : "No necesita respuesta"
+        }}
+      </p>
     </div>
 
     <div class="flex flex-wrap gap-3 items-center text-sm text-gray-600">
-      <span class="px-3 py-1 bg-gray-100 rounded-md">
-        {{ message.area }}
+      <span
+        class="px-3 py-1 bg-gray-100 rounded-md"
+        *ngIf="message.assignedAdvisor"
+      >
+        {{
+          message.agentResponseStatus === "pending"
+            ? "Pendiente"
+            : message.agentResponseStatus === "active"
+            ? "Activo"
+            : "Finalizado"
+        }}
       </span>
-      <span class="flex items-center gap-1">
+      <span class="flex items-center gap-1" *ngIf="message.createdAt">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-4 w-4"
@@ -45,9 +51,9 @@
             d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
           />
         </svg>
-        {{ message.createdAt }}
+        {{ message.createdAt | date : "short" }}
       </span>
-      <span class="flex items-center gap-1">
+      <span class="flex items-center gap-1" *ngIf="message.userId">
         <svg
           xmlns="http://www.w3.org/2000/svg"
           class="h-4 w-4"
@@ -62,8 +68,66 @@
             d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
           />
         </svg>
-        {{ message.sender }}
+        {{ message.userId }}
       </span>
+      <a
+        [href]="
+          'https://wa.me/' +
+          message.userId +
+          '?text=Hola, soy un asesor y me gustaría ayudarte con tu consulta.'
+        "
+        target="_blank"
+        class="flex items-center gap-1 px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+      >
+        <div class="flex items-center gap-2">
+          <!-- <button
+            (click)="cambiarEstado()"
+            class="flex items-center gap-1 px-3 py-1 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+              />
+            </svg>
+            Cambiar Estado
+          </button> -->
+          <a
+            [href]="
+              'https://wa.me/' +
+              message.userId +
+              '?text=Hola, soy un asesor y me gustaría ayudarte con tu consulta.'
+            "
+            target="_blank"
+            (click)="cambiarEstado()"
+            class="flex items-center gap-1 px-3 py-1 bg-green-500 text-white rounded-md hover:bg-green-600 transition-colors"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z"
+              />
+            </svg>
+            Contactar por WhatsApp
+          </a>
+        </div>
+      </a>
     </div>
   </div>
 </div>
