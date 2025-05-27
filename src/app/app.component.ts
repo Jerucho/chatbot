@@ -4,7 +4,7 @@ import { NavbarComponent } from './components/navbar/navbar.component';
 import { LucideAngularModule } from 'lucide-angular';
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet, NavbarComponent, LucideAngularModule],
+  imports: [RouterOutlet, LucideAngularModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
 })

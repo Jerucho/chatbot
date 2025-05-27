@@ -1,0 +1,39 @@
+<div
+  class="container flex flex-col gap-4 mx-auto w-full h-screen justify-center"
+>
+  <form
+    class="container flex flex-col gap-4 mx-auto w-1/4 h-full justify-center"
+    action=""
+    (submit)="onLogin()"
+    [formGroup]="formControl"
+  >
+    <div class="form-group flex flex-col gap-2">
+      <label for="email">Email</label>
+      <input
+        type="email"
+        class="form-control border-2 border-gray-200 rounded-md p-2 pl-4"
+        id="email"
+        placeholder="Enter email"
+        formControlName="email"
+      />
+      <p *ngIf="emailError" class="text-red-500">{{ emailError }}</p>
+    </div>
+    <div class="form-group flex flex-col gap-2">
+      <label for="password">Password</label>
+      <input
+        type="password"
+        class="form-control border-2 border-gray-200 rounded-md p-2 pl-4"
+        id="password"
+        placeholder="Enter password"
+        formControlName="password"
+      />
+      <p *ngIf="passwordError" class="text-red-500">{{ passwordError }}</p>
+    </div>
+    <button
+      type="submit"
+      class="border-2 border-gray-300 rounded-md p-2 hover:bg-blue-400 hover:text-white transition-all duration-300 hover:border-blue-400"
+    >
+      Login
+    </button>
+  </form>
+</div>
