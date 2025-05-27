@@ -10,7 +10,7 @@ export class ChatService {
   constructor(private http: HttpClient) {}
 
   getChats(userId: string) {
-    return this.http.get<any>(`${this.apiUrl}/pending/${userId}`, {
+    return this.http.get<any>(`${this.apiUrl}/api/pending/${userId}`, {
       withCredentials: true,
     });
   }
