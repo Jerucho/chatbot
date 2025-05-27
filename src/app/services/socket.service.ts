@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { AuthService } from './auth.service';
-
+import { environment } from '../../environments/environment';
 @Injectable({
   providedIn: 'root',
 })
@@ -11,7 +11,7 @@ export class SocketService {
 
   constructor(private authService: AuthService) {
     // Inicializar socket sin userId primero
-    this.socket = io('http://localhost:3000', {
+    this.socket = io(environment.apiUrl, {
       autoConnect: false, // No conectar automáticamente
       withCredentials: true, // Enviar cookies para autenticación
     });
