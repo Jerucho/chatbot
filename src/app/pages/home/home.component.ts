@@ -1,6 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import {
-  Message,
   MessagesListComponent,
   MessageType,
 } from '../../components/messages-list/messages-list.component';
@@ -57,6 +56,8 @@ export class HomeComponent implements OnInit, OnDestroy {
   public areaName: string = '';
   public advisorNotifications: AdvisorNotification[] = [];
 
+  public notifications: number = 0;
+  public isLoading: boolean = true;
   constructor(
     private socketService: SocketService,
     private authService: AuthService,
@@ -75,11 +76,6 @@ export class HomeComponent implements OnInit, OnDestroy {
           this.userId = user.id_user || '';
           this.idUserDB = user.idUserDB || '';
           this.areaName = user.area || '';
-          console.log('👤 Usuario cargado:', {
-            agentName: this.agentName,
-            userId: this.userId,
-            areaName: this.areaName,
-          });
 
           // 3. Unirse a la sala una vez que tenemos el userId
           if (this.userId) {
@@ -97,11 +93,14 @@ export class HomeComponent implements OnInit, OnDestroy {
     this.socketService.listen(
       'advisorNotification',
       (data: AdvisorNotification) => {
-        console.log(
-          '🔔 Notificación de asesor recibida en HomeComponent:',
-          data
-        );
+        console.log('🔔 Notificación de asesor recibida:', data);
         this.advisorNotifications.push(data);
+
+        if (this.idUserDB) {
+          this.getChats();
+        } else {
+          console.warn('❌ idUserDB no está definido aún');
+        }
       }
     );
   }
@@ -121,11 +120,13 @@ export class HomeComponent implements OnInit, OnDestroy {
   public chats: Chat[] = [];
 
   getChats() {
+    this.isLoading = true;
     this.chatService.getChats(this.idUserDB).subscribe({
       next: (response) => {
         console.log('Respuesta completa del servidor:', response);
         if (response && response.pendingMessages) {
           this.chats = response.pendingMessages;
+          this.isLoading = false;
           console.log('💬 Chats obtenidos:', this.chats);
         } else {
           console.error('❌ Formato de respuesta inválido:', response);
